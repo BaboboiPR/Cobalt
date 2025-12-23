@@ -29,3 +29,9 @@ int check_loop(std::string name[],std::string string_name) {
     }
     return -1;
 }
+
+//function pointer tutorial
+void hello() { std::cout << "Hello!\n"; }
+void (*a)();
+a = hello;
+

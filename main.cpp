@@ -292,6 +292,9 @@ string intVariable(const long long& m, ofstream& file) {
                 }
                 type_var[pos_var] = "bool";
             }
+            else if (tokens[m] == "fn") {
+
+            }
 
             else {
                 if (tokens[m] == "=") {
