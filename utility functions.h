@@ -3,6 +3,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <vector>
 inline int stob(const std::string &s) {
     if (s == "true") return true;
     else if (s == "false") return false;
@@ -31,7 +32,24 @@ int check_loop(std::string name[],std::string string_name) {
 }
 
 //function pointer tutorial
-void hello() { std::cout << "Hello!\n"; }
-void (*a)();
-a = hello;
+// void hello() { std::cout << "Hello!\n"; }
+// void (*a)();
+// a = hello;
+//variable = function
+void var_to_func(std::string name_var,std::string type_var, std::string name_func,std::string op ,std::ofstream& file) {
+    file << type_var << " (*" << name_var << ")(" << op <<");" << "\n";
+    file << name_var << " = " << name_func << ";" << "\n";
+}
+
+
+void AST(int line,std::vector<std::string> line_str) {
+    std::ofstream fin("file.bt");
+    for (int i = 0; i <= line; i++) {
+        std::cout << line_str[i] << std::endl;
+
+        fin << line_str[i] << "\n";
+    }
+    fin.close();
+
+}
 

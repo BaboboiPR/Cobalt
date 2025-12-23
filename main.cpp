@@ -2,9 +2,10 @@
 #include <string>
 #include "utility functions.h"
 #include <fstream>
+#include <vector>
 using namespace std;
 
-
+int line = 0;
 int form = 0;
 string word;
 int cnt = 0;
@@ -32,7 +33,7 @@ std::string tokens[100];
 
 std::istringstream iss(function_part);
 int pos_var = 0;
-
+vector <string> line_str(100);
 void Tabs(ofstream& file) {
     for (int i = 0; i < indent_level; i++)
     {
@@ -110,6 +111,7 @@ void Division(ofstream& file, const long long& m)
 {
     if (tokens[m] == "/")
     {
+
         if (stoi(tokens[m + 1]) != 0) {
             file << tokens[m - 1] << " / " << tokens[m + 1] << ";" << endl;
         }
@@ -139,22 +141,30 @@ void While(ofstream& file, const long long& m)
         indent_level++;
     }
 }
-// void For(ofstream& file, const long long& m)
-// {
-//     if (tokens[m] == "for")
-//     {
-//         file << "for" << "(" << tokens[m + 1] << ";"<<tokens[m + 2] <<";" <<tokens[m + 3] << "){" << endl;
-//         file << "\t";
-//         loop = true;
-//     }
-//
-// }
+//type
+string fn_for_var[100];
+void var_fn(ofstream &file,const long long& m){
+    cerr<<tokens[m]<<" ";
+    if (tokens[m]==name_var[pos-1]) {
+        file << fn_for_var[pos-1]<<"()"<<";\n";
+    }
+    if (tokens[m]=="void" and tokens[m+2]=="->") {
+        type_var[pos]=tokens[m]+"_func";
+        name_var[pos]=tokens[m+1];
+        file << type_var[pos].substr(0,type_var[pos].size()-5) << " (*" << name_var[pos] << ")(" << "" <<");" << "\n";
+        fn_for_var[pos]=tokens[m+3];
+        cerr<<fn_for_var[pos];
 
+        file << name_var[pos] << " = " << tokens[m+3] << ";" << "\n";
+        pos++;
+    }
+    //cerr<<tokens[m]<<" ";
 
-
+}
 //differation between functions/for/.. support
 void End(ofstream &file, const long long &m, std::istringstream &line)
 {
+
     if (tokens[m] == "end")
     {
 
@@ -174,6 +184,7 @@ void import(ofstream& file, const long long& m)
 {
     if (tokens[m] == "import")
     {
+        line_str[line]="include";
         if(tokens[m + 1]=="in_out" and imported[0] == false) {
             file << "#include <" << "iostream" << ">" << endl;
             imported[0] = true;
@@ -240,8 +251,7 @@ void func_return(ofstream& file, const long long& m,ifstream& file1) {
         file << "return "<<tokens[m+1].substr(0,tokens[m+1].size()-1) << ";" << endl;
         type_checking=check_loop(name_var,tokens[m+1].substr(0,tokens[m+1].size()-1));
         if (type_checking==-1) {
-            cerr << "Error code 3: return error!";
-
+            cerr << "Error code 3: return error!"<<"\n";
         }
         if (tokens[m + 2] != type_var[type_checking]) {
             if (tokens[m+2]=="Int" and type_var[type_checking]=="int"){}
@@ -249,7 +259,7 @@ void func_return(ofstream& file, const long long& m,ifstream& file1) {
             else if (tokens[m+2]=="Bool" and type_var[type_checking]=="bool"){}
             else if (tokens[m+2]=="String" and type_var[type_checking]=="string"){}
             else {
-                cerr << "Warning return type isn't the same as value";
+                cerr << "Warning return type isn't the same as value" <<"\n";
             }
 
         }
@@ -322,61 +332,63 @@ void NewLine(ofstream& file, const long long& m) {
         file << "cout << endl;" << "\n";
     }
 }
-
+ifstream file("file.c--");
+ofstream file1("file1.cpp");
 void decode() {
-    ifstream file("file.c--");
-    ofstream file1("file1.cpp");
     file1 << "using namespace std;" << endl;
-
-
     while (getline(file, str)) {
         while (str[i] != ';' and i < str.size() ) {
             //tokenizations
             if (str[i] == ' ') {
                 tokens[j] = str.substr(pos, i - pos);
-                cout<<tokens[j]<<" "<<j<<endl;
+                //cout<<tokens[j]<<" "<<j<<endl;
                 j++;
                 pos = i + 1;
+
+
             }
             if (str[i + 1] == ';' or i + 1 >= str.size()) {
                 tokens[j] = str.substr(pos, i - pos + 1);
-                cout<<tokens[j]<<" "<<j<<endl;
+                //cout<<tokens[j]<<" "<<j<<endl;
                 j++;
                 pos = i + 1;
+
+
             }
             if (str[i]=='=' and str[i - 1] != ' ' and str[i + 1] != ' ') {
                 tokens[j] = str.substr(pos, i - pos);
                 tokens[j+1] = str[i];
-                cout << tokens[j]<<" "<<j<<endl;
-                cout<<tokens[j+1]<<" "<<j<<endl;
+                //cout << tokens[j]<<" "<<j<<endl;
+                //cout<<tokens[j+1]<<" "<<j<<endl;
                 j=j+2;
                 pos = i + 1;
+
             }
             i++;
         }
         Tabs(file1);
         for (long long m = 0; m < j; m++) {
-
-                import(file1,m);
-                func_main(file1,m);
-                intVariable(m, file1);
-                While(file1, m);
-                //For(file1, m);
-                print(m, file1);
-                input(m, file1);
-                Add(file1, m);
-                Minus(file1, m);
-                Multiplication(file1, m);
-                Division(file1, m);
-                NewLine(file1, m);
-                to_cpp(m, file1, file);
-                func(file1, m);
-                func_return(file1, m,file);
-                func_calling(file1, m);
-
-
+            import(file1,m);
+            func_main(file1,m);
+            intVariable(m, file1);
+            While(file1, m);
+            print(m, file1);
+            input(m, file1);
+            Add(file1, m);
+            Minus(file1, m);
+            Multiplication(file1, m);
+            Division(file1, m);
+            NewLine(file1, m);
+            to_cpp(m, file1, file);
+            func(file1, m);
+            func_return(file1, m,file);
+            func_calling(file1, m);
+            if (line_str[line]!="") line_str[line]=line_str[line]+" "+tokens[m];
+            else line_str[line]=tokens[m];
             End(file1, m,iss);
+            var_fn(file1, m);
         }
+        line++;
         i = 0;
         pos = 0;
         str.clear();
@@ -387,6 +399,11 @@ void decode() {
     file1.close();
 }
 
+
 int main() {
     decode();
+
+
+
+    //AST(line,line_str);
 }
