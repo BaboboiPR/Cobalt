@@ -264,23 +264,17 @@ void func_return(ofstream& file, const long long& m,ifstream& file1) {
 string intVariable(const long long& m, ofstream& file) {
 
         if (tokens[m + 1] != "") {
-            if (tokens[m + 1].substr(0, 1) == "[" and tokens[m + 3] != "") {
-                file << tokens[m] << " " << tokens[m + 1];
-                file << " = " << tokens[m + 3] << ";" << endl;
-            }
+            // if (tokens[m + 1].substr(0, 1) == "[" and tokens[m + 3] != "") {
+            //     file << tokens[m] << " " << tokens[m + 1];
+            //     file << " = " << tokens[m + 3] << ";" << endl;
+            // }
             if (tokens[m] == "int") {
                 file << "int ";
                 if (tokens[m + 2] == "=") {
                     file << tokens[m + 1] << ";" << endl;
                     name_var[pos_var] = tokens[m + 1];
                 }
-
-                if (tokens[m + 2].substr(0, 1) == "[") {
-                    file << tokens[m + 1];
-                    file << tokens[m + 2] << ";" << endl;
-                }
                 type_var[pos_var] = "int";
-
             }
             else if (tokens[m] == "float") {
                 file << "float ";
@@ -290,7 +284,7 @@ string intVariable(const long long& m, ofstream& file) {
                 }
                 type_var[pos_var] = "float";
             }
-            if (tokens[m] == "bool") {
+            else if (tokens[m] == "bool") {
                 file << "bool ";
                 if (tokens[m + 2] == "=") {
                     file << tokens[m + 1] << ";" << endl;
@@ -300,14 +294,14 @@ string intVariable(const long long& m, ofstream& file) {
             }
 
             else {
-                if (tokens[m] == "=" and tokens[m - 1].substr(0, 1) != "[") {
-
-                    cerr << tokens[m + 2];
+                if (tokens[m] == "=") {
                     if (tokens[m + 2] == "" and tokens[m + 1] != "") {
                         Tabs(file);
+
                         if (type_var[pos_var] == "int") file << tokens[m - 1] << " = " << stoi(tokens[m + 1]) << ";" << endl;//stoi = string to integer
                         if (type_var[pos_var] == "float") file << tokens[m - 1] << " = " << stof(tokens[m + 1]) << ";" << endl;// string to float
                         if (type_var[pos_var] == "bool") file << tokens[m-1] << " = " << stob(tokens[m + 1]) << ";" << endl;// string to bool
+                        pos_var++;
                     }
                     else {
                         file << tokens[m - 1] << " = ";
@@ -317,7 +311,7 @@ string intVariable(const long long& m, ofstream& file) {
         }
 
     return varName;
-    pos_var++;
+
 }
 
 void NewLine(ofstream& file, const long long& m) {

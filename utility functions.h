@@ -29,22 +29,3 @@ int check_loop(std::string name[],std::string string_name) {
     }
     return -1;
 }
-
-std::string table [10][10]
-{
-    {"Int","int"},
-    {"Float","float"},
-    {"String","string"},
-    {"Bool","bool"}
-};
-bool check_var(std::string type_var,std::string token) {
-
-    for (int i = 0; i < 4; i++) {
-        if (table[i][0]==type_var && table[i][1]==token) {
-            return true;
-        }
-    }
-    std::cerr<<"Error code 3: Type of variable doesn't exist";
-    return false;
-
-}
