@@ -4,6 +4,16 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+
+struct variable {
+    std::string name;
+    std::string type;
+    bool array = false;
+};
+struct token {
+    std::string type;
+    std::string value;
+};
 inline int stob(const std::string &s) {
     if (s == "true") return true;
     else if (s == "false") return false;
@@ -22,9 +32,9 @@ void reset_file(std::ifstream &file) {
 }
 
 
-int check_loop(std::string name[],std::string string_name) {
+int check_loop(variable name[],std::string string_name) {
     for (int i = 0; i < 99; i++) {
-        if (name[i] == string_name) {
+        if (name[i].type == string_name) {
             return i;
         }
     }
@@ -52,4 +62,3 @@ void AST(int line,std::vector<std::string> line_str) {
     fin.close();
 
 }
-
