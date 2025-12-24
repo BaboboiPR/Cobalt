@@ -11,7 +11,7 @@ struct variable {
     bool array = false;
 };
 struct token {
-    std::string type;
+    std::string type = "none";
     std::string value;
 };
 inline int stob(const std::string &s) {

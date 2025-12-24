@@ -46,7 +46,7 @@
     //C++ integration
     void to_cpp(const long long m, ofstream& file, ifstream& file1)
     {
-        if (tokens[m] == "cpp_main")
+        if (Token[m].value == "cpp_main")
         {
             while (getline(file1, word))
             {
@@ -57,7 +57,7 @@
     }
     void to_cpp_ext(const long long m, ofstream& file, ifstream& file1)
     {
-        if (tokens[m] == "cpp_ext")
+        if (Token[m].value == "cpp_ext")
         {
             while (getline(file1, word))
             {
@@ -70,83 +70,96 @@
     //Output support
     void print(const long long& m, ofstream& file)
     {
-        if (tokens[m] == "print")
+        if (Token[m].value == "print")
         {
-            file << "cout << " << tokens[m+1] ;
+            file << "cout << " << Token[m+1].value ;
             ope_ = true;
         }
-        if (tokens[m] == "print!")
+        if (Token[m].value == "print!")
         {
-            file << "cout <<\"" <<tokens[m+1] << "\"";
+            file << "cout <<\"" << Token[m+1].value  << "\"";
             ope_ = true;
         }
     }
     //Input support
     void input( const long long& m, ofstream& file)
     {
-        if (tokens[m] == "input")
+        if (Token[m].value == "input")
         {
-            file << "cin >> " << tokens[m+1] << ";" << endl;
+            file << "cin >> " << Token[m+1].value << ";" << endl;
         }
     }
     //Basic arithmetic support
     void Add(ofstream& file, const long long& m)
     {
-        if (tokens[m] == "+")
+        if (Token[m].value == "+")
         {
-            if (tokens[m + 1] == "" or tokens[m - 1]=="") cerr << "Warning one or two variables are non_existent on line: "<<line<<"\n";
-            file << tokens[m - 1] << " + " << tokens[m + 1];
+            if (Token[m+1].value  == "" or Token[m - 1].value=="") cerr << "Warning one or two variables are non_existent on line: "<<line<<"\n";
+            file << Token[m - 1].value << " + " << Token[m + 1].value;
             ope_ = true;
 
         }
     }
     void Minus(ofstream& file, const long long& m)
     {
-        if (tokens[m] == "-")
+        if (Token[m].value == "-")
         {
-            file << tokens[m - 1] << " - " << tokens[m + 1];
+            file << Token[m - 1].value << " - " << Token[m + 1].value;
             ope_ = true;
         }
     }
     void Multiplication(ofstream& file, const long long& m)
     {
-        if (tokens[m] == "*")
+        if (Token[m].value == "*")
         {
-            file << tokens[m - 1] << " * " << tokens[m + 1];
+            file << Token[m - 1].value << " * " << Token[m + 1].value;
             ope_ = true;
 
         }
     }
     void Division(ofstream& file, const long long& m)
     {
-        if (tokens[m] == "/")
+        if (Token[m].value == "/")
         {
+            if (Token[m-3].type == "int") {
+                if (stoi(Token[m + 1].value) != 0) {
+                    file << Token[m - 1].value << " / " << Token[m + 1].value;
+                    ope_ = true;
 
-            if (stoi(tokens[m + 1]) != 0) {
-                file << tokens[m - 1] << " / " << tokens[m + 1];
-                ope_ = true;
-
+                }
+                if (stoi(Token[m + 1].value) == 0) {
+                    cerr << "Error code 0: Division by 0: " << line<<endl;
+                }
+                cout<<"int!!!";
             }
-            if (stoi(tokens[m + 1]) == 0) {
-                cerr << "Error code 0: Division by 0!" << endl;
+            if (Token[m-3].type == "float") {
+                if (stof(Token[m + 1].value) != 0) {
+                    file << Token[m - 1].value << " / " << Token[m + 1].value;
+                    ope_ = true;
+
+                }
+                if (stof(Token[m + 1].value) == 0) {
+                    cerr << "Error code 0: Division by 0: " << line<<endl;
+                }
+                cout<<"float!!!";
             }
         }
     }
     //loop support
     void While(ofstream& file, const long long& m)
     {
-        if (tokens[m] == "while") {
-            if (tokens[m + 1] != "" and tokens[m + 2]!="")
+        if (Token[m].value == "while") {
+            if (Token[m + 1].value != "" and Token[m + 2].value !="")
             {
-                file << "while" << "(" << tokens[m + 1] << tokens[m + 2] << tokens[m + 3] << "){" << "\n";
+                file << "while" << "(" << Token[m + 1].value << Token[m + 2].value << Token[m + 3].value << "){" << "\n";
             }
-            if (tokens[m + 1] != "" and tokens[m + 2]=="")
+            if (Token[m + 1].value != "" and Token[m + 2].value=="")
             {
-                file << "while" << "(" << tokens[m + 1] << tokens[m + 2] << "){" << "\n";
+                file << "while" << "(" << Token[m + 1].value << Token[m + 2].value << "){" << "\n";
             }
-            if (tokens[m + 1] == "" and tokens[m + 2]=="")
+            if (Token[m + 1].value == "" and Token[m + 2].value=="")
             {
-                file << "while" << "(" << tokens[m + 1]  << "){" << "\n";
+                file << "while" << "(" << Token[m + 1].value  << "){" << "\n";
             }
 
             loop = true;
@@ -156,18 +169,19 @@
     //type
     string fn_for_var[100];
     void var_fn(ofstream &file,const long long& m){
-        cerr<<tokens[m]<<" ";
+        cerr<<Token[m].value<<" ";
         // if (tokens[m]==typ[pos-1]) {
         //     file << fn_for_var[pos-1]<<"()"<<";\n";
         // }
-        if (tokens[m]=="void" and tokens[m+2]=="->") {
-            arr[pos_var].type=tokens[m]+"_func";
-            arr[pos_var].name=tokens[m+1];
+        if (Token[m].value=="void" and Token[m+2].value=="->") {
+            arr[pos_var].type=Token[m].value+"_func";
+            Token[m].type="void_fn";
+            arr[pos_var].name=Token[m+1].value;
             file << arr[pos_var].type.substr(0,arr[pos_var].type.size()-5) << " (*" << arr[pos_var].name << ")(" << "" <<");" << "\n";
-            fn_for_var[pos]=tokens[m+3];
+            fn_for_var[pos]=Token[m+3].value;
             cerr<<fn_for_var[pos];
 
-            file << arr[pos_var].name << " = " << tokens[m+3] << ";" << "\n";
+            file << arr[pos_var].name << " = " << Token[m+3].value << ";" << "\n";
             pos_var++;
         }
         //cerr<<tokens[m]<<" ";
@@ -177,7 +191,7 @@
     void End(ofstream &file, const long long &m, std::istringstream &line)
     {
 
-        if (tokens[m] == "end")
+        if (Token[m].value == "end")
         {
 
             file<< "}" << "\n";
@@ -194,29 +208,29 @@
     bool imported[9];
     void import(ofstream& file, const long long& m)
     {
-        if (tokens[m] == "import")
+        if (Token[m].value == "import")
         {
             line_str[line]="include";
-            if(tokens[m + 1]=="in_out" and imported[0] == false) {
+            if(Token[m + 1].value=="in_out" and imported[0] == false) {
                 file << "#include <" << "iostream" << ">" << endl;
                 imported[0] = true;
             }
-            if (tokens[m + 1] == "array")
+            if (Token[m + 1].value == "array")
             {
                 file << "#include <" << "array" << ">" << endl;
                 file << "#include <" << "vector" << ">" << endl;
                 file << "#include <" << "unordered_map" << ">" << endl;
                 file << "#include <" << "map" << ">" << endl;
             }
-            if (tokens[m + 1] == "file")
+            if (Token[m + 1].value == "file")
             {
                 file << "#include <" << "fstream" << ">" << endl;
             }
-            if (tokens[m + 1] == "math")
+            if (Token[m + 1].value == "math")
             {
                 file << "#include <" << "cmath" << ">" << endl;
 		    }
-            if (tokens[m + 1] == "string")
+            if (Token[m + 1].value == "string")
             {
                 file << "#include <" << "string" << ">" << endl;
             }
@@ -227,7 +241,8 @@
 
     //function main support
     void func_main(ofstream& file, const long long& m) {
-        if (tokens[m] == "main" and tokens[m - 1] == "fn") {
+        if (Token[m].value == "main" and Token[m - 1].value == "fn") {
+            Token[m].type="main";
             file << "int main() {" << endl;
             indent_level++;
         }
@@ -236,17 +251,17 @@
 
 
     void func(ofstream& file,long long& m) {
-        if ((tokens[m] != "main" and tokens[m]!= "") and tokens[m - 1] == "fn" and function[function_count] == 0 and function[function_count+1] == false) {
-            file << "auto " << tokens[m] <<"() {" << endl;
-            name_function=tokens[m];
+        if ((Token[m].value != "main" and Token[m].value != "") and Token[m - 1].value == "fn" and function[function_count] == 0 and function[function_count+1] == false) {
+            file << "auto " << Token[m].value <<"() {" << endl;
+            name_function=Token[m].value;
         }
         if (name_function == "main") {
             cerr << "Error code 2: Name function become main when it shouldn't";
         }
     }
     void func_calling(ofstream& file,long long& m) {
-        if ((tokens[m] != "main" and tokens[m]!= "") and tokens[m - 1] == "fn!" and function[function_count] == 0 and function[function_count+1] == false) {
-            file << tokens[m] <<"();" << endl;
+        if ((Token[m].value != "main" and Token[m].value!= "") and Token[m - 1].value == "fn!" and function[function_count] == 0 and function[function_count+1] == false) {
+            file << Token[m].value <<"();" << endl;
         }
         if (name_function == "main") {
             cerr << "Error code 2: Name function become main when it shouldn't on line: " << line <<"\n";
@@ -256,17 +271,17 @@
 
     int type_checking;
     void func_return(ofstream& file, const long long& m,ifstream& file1) {
-        if (tokens[m] == "return") {
-            type_function = tokens[m+2];
+        if (Token[m].value == "return") {
+            type_function = Token[m+2].value;
         }
-        if (tokens[m] == "return" and name_function != "main") {
-            file << "return "<<tokens[m+1].substr(0,tokens[m+1].size()-1) << ";" << endl;
-            type_checking=check_loop(arr,tokens[m+1].substr(0,tokens[m+1].size()-1));
-            if (tokens[m + 2] != arr[type_checking].type) {
-                if (tokens[m+2]=="Int" and arr[type_checking].type=="int"){}
-                else if (tokens[m+2]=="Float" and arr[type_checking].type=="float"){}
-                else if (tokens[m+2]=="Bool" and arr[type_checking].type=="bool"){}
-                else if (tokens[m+2]=="String" and arr[type_checking].type=="string"){}
+        if (Token[m].value == "return" and name_function != "main") {
+            file << "return "<<Token[m+1].value.substr(0,Token[m+1].value.size()-1) << ";" << endl;
+            type_checking=check_loop(arr,Token[m+1].value.substr(0,Token[m+1].value.size()-1));
+            if (Token[m + 2].value != arr[type_checking].type) {
+                if (Token[m+2].value =="Int" and arr[type_checking].type=="int"){}
+                else if (Token[m+2].value=="Float" and arr[type_checking].type=="float"){}
+                else if (Token[m+2].value=="Bool" and arr[type_checking].type=="bool"){}
+                else if (Token[m+2].value=="String" and arr[type_checking].type=="string"){}
                 else {
                     if (type_checking >= 0) {
                         cout<< arr[type_checking].type<<"\n"<<"aia e";
@@ -288,35 +303,39 @@
     //Initialization support
     string intVariable(const long long& m, ofstream& file) {
 
-            if (tokens[m + 1] != "") {
-                if (tokens[m] == "int") {
+            if (Token[m + 1].value != "") {
+                if (Token[m].value == "int") {
                     file << "int ";
-                    if (tokens[m + 2] == "=") {
-                        file << tokens[m + 1] << ";" << endl;
-                        arr[pos_var].name = tokens[m + 1];
+                    if (Token[m + 2].value == "=") {
+                        file << Token[m + 1].value << ";" << endl;
+                        arr[pos_var].name = Token[m + 1].value;
+                        Token[m+1].type = "int";
                         arr[pos_var].type = "int";
                     }
                     pos_var++;
                 }
-                else if (tokens[m] == "float") {
+                else if (Token[m].value == "float") {
                     file << "float ";
-                    if (tokens[m + 2] == "=") {
-                        file << tokens[m + 1] << ";" << endl;
-                        arr[pos_var].name = tokens[m + 1];
+                    if (Token[m + 2].value == "=") {
+                        file << Token[m + 1].value << ";" << endl;
+                        arr[pos_var].name = Token[m + 1].value;
+                        Token[m+1].type = "float";
+                        //cout<<Token[m+1].type<<"\n";
                         arr[pos_var].type = "float";
                     }
                     pos_var++;
                 }
-                else if (tokens[m] == "bool") {
+                else if (Token[m].value == "bool") {
                     file << "bool ";
-                    if (tokens[m + 2] == "=") {
-                        file << tokens[m + 1] << ";" << endl;
-                        arr[pos_var].name = tokens[m + 1];
+                    if (Token[m + 2].value == "=") {
+                        file << Token[m + 1].value << ";" << endl;
+                        arr[pos_var].name = Token[m + 1].value;
+                        Token[m+1].type = "bool";
                         arr[pos_var].type = "bool";
                     }
                     pos_var++;
                 }
-                else if (tokens[m] == "fn") {
+                else if (Token[m].value == "fn") {
 
                 }
 
@@ -366,6 +385,7 @@
             while (str[i] != ';' and i < str.size() ) {
                 //tokenizations
                 if (str[i] == ' ') {
+                    Token[j].value = str.substr(pos, i - pos);
                     tokens[j] = str.substr(pos, i - pos);
                     //cout<<tokens[j]<<" "<<j<<endl;
                     j++;
@@ -375,6 +395,7 @@
                 }
                 if (str[i + 1] == ';' or i + 1 >= str.size()) {
                     tokens[j] = str.substr(pos, i - pos + 1);
+                    Token[j].value = str.substr(pos, i - pos + 1);
                     //cout<<tokens[j]<<" "<<j<<endl;
                     j++;
                     pos = i + 1;
@@ -383,7 +404,9 @@
                 }
                 if (str[i]=='=' and str[i - 1] != ' ' and str[i + 1] != ' ') {
                     tokens[j] = str.substr(pos, i - pos);
+                    Token[j].value = str.substr(pos, i - pos);
                     tokens[j+1] = str[i];
+                    Token[j+1].value = str[i];
                     //cout << tokens[j]<<" "<<j<<endl;
                     //cout<<tokens[j+1]<<" "<<j<<endl;
                     j=j+2;
