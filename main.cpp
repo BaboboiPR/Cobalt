@@ -121,18 +121,17 @@
     {
         if (Token[m].value == "/")
         {
-            if (Token[m-3].type == "int") {
+            if (Token[1].type == "int") {
                 if (stoi(Token[m + 1].value) != 0) {
                     file << Token[m - 1].value << " / " << Token[m + 1].value;
                     ope_ = true;
-
                 }
                 if (stoi(Token[m + 1].value) == 0) {
                     cerr << "Error code 0: Division by 0: " << line<<endl;
                 }
                 cout<<"int!!!";
             }
-            if (Token[m-3].type == "float") {
+            if (Token[1].type == "float") {
                 if (stof(Token[m + 1].value) != 0) {
                     file << Token[m - 1].value << " / " << Token[m + 1].value;
                     ope_ = true;
@@ -175,12 +174,11 @@
         // }
         if (Token[m].value=="void" and Token[m+2].value=="->") {
             arr[pos_var].type=Token[m].value+"_func";
-            Token[m].type="void_fn";
+            Token[m+1].type="void_fn";
             arr[pos_var].name=Token[m+1].value;
             file << arr[pos_var].type.substr(0,arr[pos_var].type.size()-5) << " (*" << arr[pos_var].name << ")(" << "" <<");" << "\n";
             fn_for_var[pos]=Token[m+3].value;
             cerr<<fn_for_var[pos];
-
             file << arr[pos_var].name << " = " << Token[m+3].value << ";" << "\n";
             pos_var++;
         }
