@@ -311,6 +311,7 @@
                         arr[pos_var].type = "int";
                     }
                     pos_var++;
+                    Token[m].type = "intializer";
                 }
                 else if (Token[m].value == "float") {
                     file << "float ";
@@ -322,6 +323,7 @@
                         arr[pos_var].type = "float";
                     }
                     pos_var++;
+                    Token[m].type = "intializer";
                 }
                 else if (Token[m].value == "bool") {
                     file << "bool ";
@@ -332,29 +334,31 @@
                         arr[pos_var].type = "bool";
                     }
                     pos_var++;
+                    Token[m].type = "intializer";
                 }
                 else if (Token[m].value == "fn") {
 
                 }
 
                 else {
-                    if (tokens[m] == "=") {
+                    if (Token[m].value == "=") {
+                        Token[m].type = "assign";
                         if (tokens[m + 2] == "" and tokens[m + 1] != "") {
                             Tabs(file);
                             if (arr[pos_var-1].type == "int") {
                                 file << tokens[m - 1] << " = " << stoi(tokens[m + 1]);//stoi = string to integer
                                 ope_ = true;
-
+                                Token[m + 1].type = "value";
                                 }
                             if (arr[pos_var-1].type == "float"){
                                 file << tokens[m - 1] << " = " << stof(tokens[m + 1]);// string to float
                                 ope_ = true;
-
+                                Token[m + 1].type = "value";
                                 }
                             if (arr[pos_var-1].type == "bool"){
                                 file << tokens[m-1] << " = " << stob(tokens[m + 1]);// string to bool
                                 ope_ = true;
-
+                                Token[m + 1].type = "value";
                                 }
 
                         }
@@ -431,8 +435,8 @@
                 func(file1, m);
                 func_return(file1, m,file);
                 func_calling(file1, m);
-                if (line_str[line]!="") line_str[line]=line_str[line]+" "+tokens[m];
-                else line_str[line]=tokens[m];
+                if (line_str[line]!="") line_str[line]=line_str[line]+" "+Token[m].type+": "+Token[m].value + "\n";
+                else line_str[line]=std::to_string(line)+" "+ Token[m].type+": "+Token[m].value + "\n";
                 End(file1, m,iss);
                 var_fn(file1, m);
             }
@@ -456,5 +460,5 @@
         // cout<<arr[0].name<<endl;
         // cout<<arr[0].type<<endl;
 
-        //AST(line,line_str);
+        AST(line,line_str);
     }
