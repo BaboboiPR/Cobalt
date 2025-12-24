@@ -4,7 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
-
+#include "parser.h"
 struct variable {
     std::string name;
     std::string type;
@@ -53,12 +53,15 @@ void var_to_func(std::string name_var,std::string type_var, std::string name_fun
 
 
 void AST(int line,std::vector<std::string> line_str) {
-    std::ofstream fin("file.bt");
+    std::fstream fin("file.bt");
     for (int i = 0; i <= line; i++) {
         std::cout << line_str[i] << std::endl;
 
         fin << line_str[i] << "\n";
     }
     fin.close();
-
+    //std::fstream file("file.bt");
+    //parser(file);
+    //buildAST();
+    //file.close();
 }

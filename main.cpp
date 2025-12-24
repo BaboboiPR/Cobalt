@@ -86,7 +86,9 @@
     {
         if (Token[m].value == "input")
         {
+            Token[m].type="input";
             file << "cin >> " << Token[m+1].value << ";" << endl;
+            ope_=true;
         }
     }
     //Basic arithmetic support
@@ -129,7 +131,6 @@
                 if (stoi(Token[m + 1].value) == 0) {
                     cerr << "Error code 0: Division by 0: " << line<<endl;
                 }
-                cout<<"int!!!";
             }
             if (Token[1].type == "float") {
                 if (stof(Token[m + 1].value) != 0) {
@@ -140,7 +141,6 @@
                 if (stof(Token[m + 1].value) == 0) {
                     cerr << "Error code 0: Division by 0: " << line<<endl;
                 }
-                cout<<"float!!!";
             }
         }
     }
@@ -166,7 +166,8 @@
         }
     }
     //type
-    string fn_for_var[100];
+    string fn_for_var;
+    string var_name_calling;
     void var_fn(ofstream &file,const long long& m){
         cerr<<Token[m].value<<" ";
         // if (tokens[m]==typ[pos-1]) {
@@ -175,13 +176,17 @@
         if (Token[m].value=="void" and Token[m+2].value=="->") {
             arr[pos_var].type=Token[m].value+"_func";
             Token[m+1].type="void_fn";
+            var_name_calling=Token[m+1].value;
             arr[pos_var].name=Token[m+1].value;
             file << arr[pos_var].type.substr(0,arr[pos_var].type.size()-5) << " (*" << arr[pos_var].name << ")(" << "" <<");" << "\n";
-            fn_for_var[pos]=Token[m+3].value;
-            cerr<<fn_for_var[pos];
+            fn_for_var=Token[m+3].value;
+            //cerr<<fn_for_var[pos];
             file << arr[pos_var].name << " = " << Token[m+3].value << ";" << "\n";
             pos_var++;
         }
+        if (Token[m].value==var_name_calling+".call;") {
+            file << var_name_calling+"()";
+        };
         //cerr<<tokens[m]<<" ";
 
     }
@@ -208,7 +213,7 @@
     {
         if (Token[m].value == "import")
         {
-            line_str[line]="include";
+
             if(Token[m + 1].value=="in_out" and imported[0] == false) {
                 file << "#include <" << "iostream" << ">" << endl;
                 imported[0] = true;
@@ -435,11 +440,13 @@
                 func(file1, m);
                 func_return(file1, m,file);
                 func_calling(file1, m);
-                if (line_str[line]!="") line_str[line]=line_str[line]+" "+Token[m].type+": "+Token[m].value + "\n";
-                else line_str[line]=std::to_string(line)+" "+ Token[m].type+": "+Token[m].value + "\n";
+                if (line_str[line]!="") line_str[line]=line_str[line]+""+""+Token[m].value + " ";
+                else line_str[line]=Token[m].value + " ";
+
                 End(file1, m,iss);
                 var_fn(file1, m);
             }
+            line_str[line]+="\n";
             line++;
             if (ope_ == true) file1 <<";"<<endl;
             i = 0;
